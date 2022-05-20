@@ -8,6 +8,7 @@ import { Before, After } from "@badeball/cypress-cucumber-preprocessor"
 Before(() => {
   cy.cleanDBAndSeedData()
   cy.wrap("no").as("firstVisited")
+  cy.cleanupImposter()
 })
 
 After(() => {
@@ -34,4 +35,8 @@ After({ tags: "@stopTime" }, () => {
 
 Before({ tags: "@featureToggle" }, () => {
   cy.enableFeatureToggle(true)
+})
+
+Before({ tags: "@external_api_dummy" }, () => {
+  cy.useExternalApiDummy()
 })

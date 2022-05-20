@@ -287,4 +287,9 @@ class TestabilityRestController {
     testabilitySettings.setAlwaysChoose(randomization.choose);
     return Collections.emptyList();
   }
+
+  @PostMapping("/use_external_api_dummy")
+  public void useExternalApiDummy() {
+    testabilitySettings.setUseRealWikidata(false);
+  }
 }

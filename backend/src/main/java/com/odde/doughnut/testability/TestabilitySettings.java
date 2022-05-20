@@ -19,6 +19,7 @@ public class TestabilitySettings {
   @Getter @Setter Boolean useRealGithub = true;
   @Autowired GithubService githubService;
   @Getter private boolean featureToggleEnabled = false;
+  @Getter @Setter private Boolean useRealWikidata = true;
 
   public void timeTravelTo(Timestamp timestamp) {
     this.timestamp = timestamp;
@@ -57,5 +58,12 @@ public class TestabilitySettings {
 
   public void enableFeatureToggle(boolean enabled) {
     this.featureToggleEnabled = enabled;
+  }
+
+  public String getWikidataUrl() {
+    if (useRealWikidata) {
+      return "https://www.wikidata.org/wiki/Special:EntityData/";
+    }
+    return "http://localhost:5000/wiki/";
   }
 }

@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 // @ts-check
+import { HttpMethod, Imposter, Mountebank, DefaultStub } from '@anev/ts-mountebank'
 
 Cypress.Commands.add("cleanDBAndSeedData", () => {
   cy.request({
@@ -74,4 +75,24 @@ Cypress.Commands.add("seedCircle", (circle) => {
   }).then((response) => {
     expect(response.body).to.equal("OK")
   })
+})
+
+Cypress.Commands.add("useExternalApiDummy", () => {
+  cy.request({
+    method: "POST",
+    url: "/api/testability/use_external_api_dummy",
+  })
+})
+
+Cypress.Commands.add("setupImposter", async (apiUrl, stubbedResponse, statusCode) => {
+  const mb = new Mountebank()
+  const imposter = new Imposter()
+      .withPort(5000)
+      .withStub(new DefaultStub(apiUrl, HttpMethod.GET, stubbedResponse, statusCode))
+  await mb.createImposter(imposter)
+})
+
+Cypress.Commands.add("cleanupImposter", async () => {
+  const mb = new Mountebank()
+  await mb.deleteImposter(5000)
 })

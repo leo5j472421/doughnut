@@ -5,6 +5,10 @@
 
 import { Given, Then, When } from "@badeball/cypress-cucumber-preprocessor"
 
+Given("the description for {string} on Wikidata is {string}", (term, description) => {
+  cy.setupImposter(`/wiki/Q950250.json`, {description: `${description}`}, 200)
+})
+
 When("I ask for the {string} entity from Wikidata", (term) => {
   cy.request(`/api/wikidata/${term}`).as("resp")
 })
