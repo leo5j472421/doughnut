@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 // @ts-check
-import { HttpMethod, Imposter, Mountebank, DefaultStub } from '@anev/ts-mountebank'
+import { HttpMethod, Imposter, Mountebank, DefaultStub } from "@anev/ts-mountebank"
 
 Cypress.Commands.add("cleanDBAndSeedData", () => {
   cy.request({
@@ -84,15 +84,27 @@ Cypress.Commands.add("useExternalApiDummy", () => {
   })
 })
 
-Cypress.Commands.add("setupImposter", async (apiUrl, stubbedResponse, statusCode) => {
-  const mb = new Mountebank()
-  const imposter = new Imposter()
-      .withPort(5000)
-      .withStub(new DefaultStub(apiUrl, HttpMethod.GET, stubbedResponse, statusCode))
-  await mb.createImposter(imposter)
+Cypress.Commands.add("getImposterApiServicePort", () => {
+  cy.request({
+    url: "/api/testability/get_imposter_api_service_port",
+  }).then((resp) => {
+    cy.wrap(resp.body).as("imposter_port")
+  })
 })
 
-Cypress.Commands.add("cleanupImposter", async () => {
-  const mb = new Mountebank()
-  await mb.deleteImposter(5000)
+Cypress.Commands.add("setupImposter", (apiUrl, stubbedResponse, statusCode) => {
+    cy.get("@imposter_port").then(async (port) => {
+      const mb = new Mountebank()
+      const imposter = new Imposter()
+          .withPort(port)
+          .withStub(new DefaultStub(apiUrl, HttpMethod.GET, stubbedResponse, statusCode))
+      await mb.createImposter(imposter)
+    })
+})
+
+Cypress.Commands.add("cleanupImposter", () => {
+  cy.get("@imposter_port").then(async (port) => {
+    const mb = new Mountebank()
+    await mb.deleteImposter(port)
+  })
 })

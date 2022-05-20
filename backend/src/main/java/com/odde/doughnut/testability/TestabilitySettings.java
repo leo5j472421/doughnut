@@ -20,6 +20,7 @@ public class TestabilitySettings {
   @Autowired GithubService githubService;
   @Getter private boolean featureToggleEnabled = false;
   @Getter @Setter private Boolean useRealWikidata = true;
+  @Getter private Integer imposterApiServicePort = 5000;
 
   public void timeTravelTo(Timestamp timestamp) {
     this.timestamp = timestamp;
@@ -64,6 +65,6 @@ public class TestabilitySettings {
     if (useRealWikidata) {
       return "https://www.wikidata.org/wiki/Special:EntityData/";
     }
-    return "http://localhost:5000/wiki/";
+    return "http://localhost:" + Integer.toString(imposterApiServicePort) + "/wiki/";
   }
 }

@@ -292,4 +292,9 @@ class TestabilityRestController {
   public void useExternalApiDummy() {
     testabilitySettings.setUseRealWikidata(false);
   }
+
+  @GetMapping("/get_imposter_api_service_port")
+  public Integer getImposterApiServicePort() {
+    return testabilitySettings.getImposterApiServicePort();
+  }
 }
