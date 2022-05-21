@@ -77,32 +77,30 @@ Cypress.Commands.add("seedCircle", (circle) => {
   })
 })
 
-Cypress.Commands.add("useExternalApiDummy", () => {
-  cy.request({
-    method: "POST",
-    url: "/api/testability/use_external_api_dummy",
+Cypress.Commands.add("withImposterPort", (port) => {
+  cy.wrap(port).as("imposter_port")
+})
+
+Cypress.Commands.add("useDummyWikidata", {prevSubject: true}, () => {
+  cy.get("@imposter_port").then((port) => {
+    cy.request({
+      method: "POST",
+      url: "/api/testability/use_dummy_wikidata",
+      body: {port: `${port}`},
+    })
   })
 })
 
-Cypress.Commands.add("getImposterApiServicePort", () => {
-  cy.request({
-    url: "/api/testability/get_imposter_api_service_port",
-  }).then((resp) => {
-    cy.wrap(resp.body).as("imposter_port")
-  })
-})
-
-Cypress.Commands.add("setupImposter", (apiUrl, stubbedResponse, statusCode) => {
+Cypress.Commands.add("setupImposter", (apiUrlReqPath, stubbedResponse, statusCode) => {
     cy.get("@imposter_port").then(async (port) => {
       const mb = new Mountebank()
-      const imposter = new Imposter()
-          .withPort(port)
-          .withStub(new DefaultStub(apiUrl, HttpMethod.GET, stubbedResponse, statusCode))
+      const imposter = new Imposter().withPort(port).withStub(
+        new DefaultStub(apiUrlReqPath, HttpMethod.GET, stubbedResponse, statusCode))
       await mb.createImposter(imposter)
     })
 })
 
-Cypress.Commands.add("cleanupImposter", () => {
+Cypress.Commands.add("tearDownImposter", () => {
   cy.get("@imposter_port").then(async (port) => {
     const mb = new Mountebank()
     await mb.deleteImposter(port)

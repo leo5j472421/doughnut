@@ -288,13 +288,9 @@ class TestabilityRestController {
     return Collections.emptyList();
   }
 
-  @PostMapping("/use_external_api_dummy")
-  public void useExternalApiDummy() {
-    testabilitySettings.setUseRealWikidata(false);
-  }
-
-  @GetMapping("/get_imposter_api_service_port")
-  public Integer getImposterApiServicePort() {
-    return testabilitySettings.getImposterApiServicePort();
+  @PostMapping("/use_dummy_wikidata")
+  public void useDummyWikidataService(@RequestBody HashMap<String, String> portSetting) {
+    testabilitySettings.setUseDummyWikidata(true);
+    testabilitySettings.setImposterApiServicePort(Integer.parseInt(portSetting.get("port")));
   }
 }

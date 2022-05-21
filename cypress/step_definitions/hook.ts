@@ -8,8 +8,6 @@ import { Before, After } from "@badeball/cypress-cucumber-preprocessor"
 Before(() => {
   cy.cleanDBAndSeedData()
   cy.wrap("no").as("firstVisited")
-  cy.getImposterApiServicePort()
-  cy.cleanupImposter()
 })
 
 After(() => {
@@ -38,7 +36,10 @@ Before({ tags: "@featureToggle" }, () => {
   cy.enableFeatureToggle(true)
 })
 
-Before({ tags: "@external_api_dummy" }, () => {
-  cy.getImposterApiServicePort()
-  cy.useExternalApiDummy()
+Before({ tags: "@dummy_wikidata" }, () => {
+  cy.withImposterPort(5000).useDummyWikidata()
+})
+
+After({ tags: "@dummy_wikidata" }, () => {
+  cy.tearDownImposter()
 })

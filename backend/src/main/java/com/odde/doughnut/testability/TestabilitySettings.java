@@ -19,8 +19,10 @@ public class TestabilitySettings {
   @Getter @Setter Boolean useRealGithub = true;
   @Autowired GithubService githubService;
   @Getter private boolean featureToggleEnabled = false;
-  @Getter @Setter private Boolean useRealWikidata = true;
-  @Getter private Integer imposterApiServicePort = 5000;
+
+  private WikidataService wikidataService;
+  @Getter @Setter private Boolean useDummyWikidata = false;
+  @Getter @Setter private Integer imposterApiServicePort;
 
   public void timeTravelTo(Timestamp timestamp) {
     this.timestamp = timestamp;
@@ -62,9 +64,11 @@ public class TestabilitySettings {
   }
 
   public String getWikidataUrl() {
-    if (useRealWikidata) {
-      return "https://www.wikidata.org/wiki/Special:EntityData/";
+    if (useDummyWikidata) {
+      wikidataService = new WikidataService(imposterApiServicePort);
+      return wikidataService.getApiUrl();
     }
-    return "http://localhost:" + Integer.toString(imposterApiServicePort) + "/wiki/";
+    wikidataService = new WikidataService();
+    return wikidataService.getApiUrl();
   }
 }
