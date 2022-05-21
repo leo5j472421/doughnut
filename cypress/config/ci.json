@@ -1,11 +1,11 @@
 {
   "baseUrl": "http://localhost:9081",
   "environment": "ci",
-  "nodeVersion": "system",
   "screenshotOnRunFailure": true,
   "video": false,
   "pageLoadTimeout": 100000,
   "defaultCommandTimeout": 6000,
   "trashAssetsBeforeRuns": true,
-  "watchForFileChanges": false
+  "watchForFileChanges": false,
+  "chromeWebSecurity": false
 }
