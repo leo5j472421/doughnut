@@ -8,15 +8,18 @@
   "scripts": {
     "start:mb": "mb",
     "frontend:build": "yarn --cwd frontend --frozen-lockfile --silent install && yarn --cwd frontend build",
+    "frontend:format": "wireit",
     "frontend:lint": "wireit",
     "frontend:test": "yarn --cwd frontend --frozen-lockfile --silent install && yarn --cwd frontend test",
     "frontend:sut": "yarn --cwd frontend --frozen-lockfile --silent install && yarn --cwd frontend dev",
     "backend:lint": "wireit",
+    "backend:format": "backend/gradlew -p backend spotlessApply",
     "backend:test": "backend/gradlew -p backend testDBMigrate && backend/gradlew -p backend test --build-cache --parallel",
     "backend:build": "backend/gradlew -p backend build -x test --build-cache --parallel",
     "backend:prod_build": "backend/gradlew -p backend build -x test -Dspring.profiles.active=prod --build-cache --parallel",
     "generateTypeScript": "backend/gradlew -p backend generateTypeScript",
     "cy:lint": "wireit",
+    "cy:format": "wireit",
     "cy:open": "cypress open --env configFile=development",
     "cy:run:dev": "cypress run --env configFile=development",
     "cy:run": "cypress run --env configFile=ci",
@@ -26,15 +29,20 @@
     "test:dev": "yarn frontend:build && run-p -clnr start:mb sut frontend:sut cy:run:dev",
     "test:open": "yarn run-p -clnr start:mb sut frontend:sut cy:open",
     "sound": "node scripts/sound-monitor.js",
-    "format": "backend/gradlew -p backend spotlessApply && prettier cypress --write",
     "lint:all": "yarn && yarn backend:lint && yarn frontend:lint && yarn cy:lint"
   },
   "wireit": {
+    "frontend:format": {
+      "command": "yarn --cwd frontend --frozen-lockfile --silent install && yarn --cwd frontend lint --fix"
+    },
     "frontend:lint": {
       "command": "yarn --cwd frontend --frozen-lockfile --silent install && yarn --cwd frontend lint"
     },
     "backend:lint": {
       "command": "backend/gradlew -p backend lint"
+    },
+    "cy:format": {
+      "command": "yarn --frozen-lockfile --silent install && eslint --ext .ts,.js cypress/step_definitions cypress/support"
     },
     "cy:lint": {
       "command": "yarn --frozen-lockfile --silent install && eslint --ext .ts,.js cypress"
@@ -51,12 +59,12 @@
     "@testing-library/cypress": "8.0",
     "@types/cypress-cucumber-preprocessor": "^4.0",
     "@types/node": "^17.0",
-    "@typescript-eslint/eslint-plugin": "^5.25",
-    "@typescript-eslint/parser": "^5.25",
-    "cypress": "^9.6",
+    "@typescript-eslint/eslint-plugin": "^5.26",
+    "@typescript-eslint/parser": "^5.26",
+    "cypress": "^9.7",
     "cypress-file-upload": "^5.0",
     "esbuild": "^0.14",
-    "eslint": "^8.12",
+    "eslint": "^8.16",
     "eslint-config-prettier": "^8.5",
     "eslint-plugin-cypress": "^2.12",
     "eslint-plugin-prettier": "^4.0",
@@ -69,7 +77,7 @@
   },
   "dependencies": {
     "@cucumber/cucumber": "^8.1",
-    "ejs": "^3.1.7",
+    "ejs": "^3.1.8",
     "formidable": "^2.0",
     "superagent": "^7.1"
   }
