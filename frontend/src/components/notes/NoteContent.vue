@@ -56,11 +56,13 @@
         <SvgUrlIndicator />
       </a>
     </template>
+    <div id="mapContainer" class="mapContainer" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import L from "leaflet";
 import NoteTitleWithLink from "./NoteTitleWithLink.vue";
 import NoteShortDescription from "./NoteShortDescription.vue";
 import ShowPicture from "./ShowPicture.vue";
@@ -72,6 +74,22 @@ import NoteWikidataAssociation from "./NoteWikidataAssociation.vue";
 import { StorageAccessor } from "../../store/createNoteStorage";
 
 export default defineComponent({
+  mounted() {
+    L.map("mapContainer")
+      .setView([48.5125, 2.215], 5)
+      .addLayer(
+        L.tileLayer(
+          "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
+          {
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: "abcd",
+            maxZoom: 20,
+          }
+        )
+      )
+      .addLayer(L.marker([48.5125, 2.215]));
+  },
   props: {
     note: { type: Object as PropType<Generated.Note>, required: true },
     size: { type: String, default: "large" },
@@ -117,4 +135,8 @@ export default defineComponent({
   .col
     flex: 1 1 auto
     width: 50%
+.mapContainer
+  width: 50vw
+  height: 25vh
 </style>
+
