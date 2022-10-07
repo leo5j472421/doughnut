@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "@cucumber/cucumber": "^8.6",
-    "formidable": "^2"
+    "formidable": "^2",
+    "leaflet": "^1.9.2"
   }
 }
