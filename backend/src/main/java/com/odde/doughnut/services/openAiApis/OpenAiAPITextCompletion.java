@@ -21,34 +21,38 @@ public class OpenAiAPITextCompletion extends OpenAiApiHandlerBase {
 
   private List<ChatCompletionChoice> getChatCompletionChoices(
       ChatCompletionRequest completionRequest) {
-
-    return openAiApi
+    System.out.println("1 completetionRequest:" + completionRequest);
+    List<ChatCompletionChoice> list = openAiApi
         .createChatCompletion(completionRequest)
         .doOnError(Throwable::printStackTrace)
         .blockingGet()
         .getChoices();
+    System.out.print("5  ");
+    System.out.println(list);
+    return list;
   }
 
   public AiSuggestion getOpenAiCompletion(String prompt) {
+    System.out.println("2 getOpenAiCompletion prompt:" + prompt);
     return withExceptionHandler(
         () -> {
           ChatCompletionRequest completionRequest = getChatCompletionRequest(prompt);
+          System.out.println("3 getOpenAiCompletion completionRequest:" +  completionRequest);
           List<ChatCompletionChoice> choices = getChatCompletionChoices(completionRequest);
           return choices.stream()
               .findFirst()
               .map(
-                  chatCompletionChoice ->
-                      new AiSuggestion(
-                          chatCompletionChoice.getMessage().getContent(),
-                          chatCompletionChoice.getFinishReason()))
+                  chatCompletionChoice -> new AiSuggestion(
+                      chatCompletionChoice.getMessage().getContent(),
+                      chatCompletionChoice.getFinishReason()))
               .orElse(null);
         });
   }
 
   private static ChatCompletionRequest getChatCompletionRequest(String prompt) {
-
+    System.out.println("4 prompt:" + prompt);
     List<ChatMessage> messages = new ArrayList<>();
-    final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), prompt);
+    final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.USER.value(), prompt);
     messages.add(0, systemMessage);
 
     return ChatCompletionRequest.builder()
