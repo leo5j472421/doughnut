@@ -2,10 +2,12 @@ package com.odde.doughnut.services.openAiApis;
 
 import com.odde.doughnut.entities.json.AiSuggestion;
 import com.theokanning.openai.OpenAiApi;
+import com.theokanning.openai.service.OpenAiService;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 public class OpenAiAPITextCompletion extends OpenAiApiHandlerBase {
 
   private OpenAiApi openAiApi;
+  private OpenAiService service = new OpenAiService(System.getenv("OPENAI_API_TOKEN"));
   public static final String OPEN_AI_MODEL = "gpt-3.5-turbo";
 
   public OpenAiAPITextCompletion(OpenAiApi openAiApi) {
@@ -20,33 +23,25 @@ public class OpenAiAPITextCompletion extends OpenAiApiHandlerBase {
   }
 
   private List<ChatCompletionChoice> getChatCompletionChoices(
-      ChatCompletionRequest completionRequest) {
-    System.out.println("1 completetionRequest:" + completionRequest);
-    List<ChatCompletionChoice> list = openAiApi
-        .createChatCompletion(completionRequest)
-        .doOnError(Throwable::printStackTrace)
-        .blockingGet()
-        .getChoices();
-    System.out.print("5  ");
-    System.out.println(list);
-    return list;
+    ChatCompletionRequest completionRequest) {
+    return openAiApi.createChatCompletion(completionRequest).blockingGet().getChoices();
+
   }
 
   public AiSuggestion getOpenAiCompletion(String prompt) {
-    System.out.println("2 getOpenAiCompletion prompt:" + prompt);
+
     return withExceptionHandler(
-        () -> {
-          ChatCompletionRequest completionRequest = getChatCompletionRequest(prompt);
-          System.out.println("3 getOpenAiCompletion completionRequest:" +  completionRequest);
-          List<ChatCompletionChoice> choices = getChatCompletionChoices(completionRequest);
-          return choices.stream()
-              .findFirst()
-              .map(
-                  chatCompletionChoice -> new AiSuggestion(
-                      chatCompletionChoice.getMessage().getContent(),
-                      chatCompletionChoice.getFinishReason()))
-              .orElse(null);
-        });
+      () -> {
+        ChatCompletionRequest completionRequest = getChatCompletionRequest(prompt);
+        List<ChatCompletionChoice> choices = getChatCompletionChoices(completionRequest);
+        return choices.stream()
+          .findFirst()
+          .map(
+            chatCompletionChoice -> new AiSuggestion(
+              chatCompletionChoice.getMessage().getContent(),
+              chatCompletionChoice.getFinishReason()))
+          .orElse(null);
+      });
   }
 
   private static ChatCompletionRequest getChatCompletionRequest(String prompt) {
@@ -56,11 +51,11 @@ public class OpenAiAPITextCompletion extends OpenAiApiHandlerBase {
     messages.add(0, systemMessage);
 
     return ChatCompletionRequest.builder()
-        .model(OPEN_AI_MODEL)
-        .messages(messages)
-        .n(1)
-        .maxTokens(50)
-        .logitBias(new HashMap<>())
-        .build();
+      .model(OPEN_AI_MODEL)
+      .messages(messages)
+      .n(1)
+      .maxTokens(50)
+      .logitBias(new HashMap<>())
+      .build();
   }
 }
